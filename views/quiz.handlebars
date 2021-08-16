@@ -1,0 +1,285 @@
+<div class="content">
+        <h2>Bug Bite Identification Quiz</h2>
+        <div class="quiz-container">
+            <div id="quiz"></div>
+
+            </div>
+            <div id="results"></div>
+
+        <button id="previous">Previous Question</button>
+        <button id="next">Next Question</button>
+        <button id="submit">Submit Quiz</button>
+        <button id="begin">Begin Quiz</button>
+
+
+    </div>   
+
+        <script>
+
+(function(){
+    function buildQuiz(){
+      var output = [];
+      myQuestions.forEach(
+        (currentQuestion, questionNumber) => {
+          var answers = [];
+          for(lett in currentQuestion.answers){
+            answers.push(
+              `<label>
+                <input type="radio" name="question${questionNumber}" id="question${questionNumber}" value="${lett}" required>
+                ${lett} :
+                ${currentQuestion.answers[lett]}
+              </label>`
+            );
+          }
+
+
+        output.push(
+            `<div class="slide">
+            <div class="image"><img src="${currentQuestion.image}" height="200px" width="200px"></div>
+              <div class="question"> ${currentQuestion.question}<br> 	
+	Hint:<h3>${currentQuestion.help}</h3>
+	</div>
+              <div class="answers"> ${answers.join("")} </div>
+            </div>`
+          );
+        }
+      );
+      quizContainer.innerHTML = output.join('');
+    }
+
+    function showResults(){
+      var statement = "question" + num;
+      var quest = document.querySelector("input[name=" + statement + "]:checked");
+      if(quest == null && !(currentSlide == 0)){
+        alert('Please make a selection before proceeding.');
+      }
+      if(!(quest == null)){
+
+
+      var answerContainers = quizContainer.querySelectorAll('.answers');
+
+      var result = "Unknown";
+      var info = "";
+      myQuestions.forEach( (currentQuestion, questionNumber) => {
+
+
+        var answerContainer = answerContainers[questionNumber];
+        var selector = `input[name=question${questionNumber}]:checked`;
+        var userAnswer = (answerContainer.querySelector(selector) || {}).value;
+
+
+        if(userAnswer === currentQuestion.correctAnswer){
+          result = currentQuestion.endResult;
+          info = currentQuestion.endInfo;
+          image = currentQuestion.resultImg;
+          credit = currentQuestion.questionCredit;
+	  descript = currentQuestion.description;
+	  anchor = currentQuestion.anchor;
+        }
+
+      });
+
+      resultsContainer.innerHTML = 
+'<table><tr><td>' + 
+'You were most likely bitten by a(n) ' + 
+'<a href="/glossary#' + 
+anchor + 
+'">'+ result + 
+'</a>.<p><tr><td>' + 
+'<img src="' + 
+image + 
+'" height="200px" width="200px" alt = "' + 
+credit + '"/><p>' + 
+'<tr><td>'  + 
+info + 
+'<tr><td>' + 
+descript +
+'<tr><td>' +
+'Not your Bug?' +
+'<a href="/quiz">Retake Quiz</a>';
+      	
+      submitButton.style.display = 'none';
+      previousButton.style.display = 'none';
+    }}
+
+    function showSlide(n) {
+      slides[currentSlide].classList.remove('active-slide');
+      slides[n].classList.add('active-slide');
+      currentSlide = n;
+      if(currentSlide === 0){
+        previousButton.style.display = 'none';
+        nextButton.style.display = 'none';
+        beginButton.style.display = 'inline-block';
+
+      }
+      if(currentSlide > 0 && currentSlide < slides.length-1 ){
+        nextButton.style.display = 'inline-block';
+        beginButton.style.display = 'none';
+      }
+      if(currentSlide > 1 && currentSlide < slides.length-1 ){
+        previousButton.style.display = 'inline-block';
+
+      }
+      if(currentSlide === slides.length-1){
+        nextButton.style.display = 'none';
+        submitButton.style.display = 'inline-block';
+      }
+      else{
+        submitButton.style.display = 'none';
+      }
+    }
+    var num = 0
+
+    function showNextSlide() {
+        var statement = "question" + num;
+        var quest = document.querySelector("input[name=" + statement + "]:checked");
+        if(quest == null && !(currentSlide == 0)){
+          alert('Please make a selection before proceeding.');
+        }
+        if(!(quest == null)){
+          showSlide(currentSlide + 1);
+          num ++;
+        }
+        if(currentSlide === 0){
+          showSlide(currentSlide + 1);
+          num ++;
+        }
+
+    }
+
+    function showPreviousSlide() {
+      showSlide(currentSlide - 1);
+      num --;
+    }
+
+
+    var quizContainer = document.getElementById('quiz');
+    var resultsContainer = document.getElementById('quiz');
+    var submitButton = document.getElementById('submit');
+
+    var myQuestions = [
+        {
+	  help: "Hover for Info",  	 
+          image: "https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F12%2F2018%2F11%2Fgettyimages-896157208_0-2000.jpg",
+          questionCredit: "Thiago Santos/ Getty Images",
+          question: "Please answer the questions as best as you can",
+          answers: {
+              },
+              correctAnswer: "a"
+
+          },
+      {
+        help: "They can also occur on the body.",
+  	image: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/7380608976-3088b48eaf-k-1594136205.jpg",
+        questionCredit: "Michael Voelker/ Flickr",
+        question: "Are the bites typically in clusters located below the knee? (eg. ankles and feet)",
+        answers: {
+          a: "Yes",
+          b: "No"
+        },
+	anchor: "flea",
+        correctAnswer: "a",
+        endResult: "Flea",
+        resultImg: "https://i.insider.com/6080389e44f4540019207f18?width=1000&format=jpeg",
+	description: "Small red bumps occurring in clusters or lines. Usually found around the feet or ankles, but can occur anywhere else. May have distinctive red 'halo'.",
+        resultCredit: "gutaper/ Getty Images",
+        endInfo: "Fleas typically stay at ground level and jump to bite at ankles and feet. They cannot survive on human blood, and so you will often find that the source of the infestation comes from an animal or pet.",
+
+        },
+      {
+        help: "Usually occurs in warm climates or in the summer.",
+	 image: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/close-up-red-spot-swollen-and-allergies-from-royalty-free-image-1594235608.jpg",
+        questionCredit: "Thitiwat Tapingkae/ Getty Images",
+        question: "Is the bite a raised, red bump and is getting more swollen or firmer as time passes?",
+        answers: {
+          a: "Yes",
+          b: "No"
+        },
+	anchor: "mosquito",
+        correctAnswer: "a",
+        endResult: "Mosquito",
+        resultImg: "https://www.nih.gov/sites/default/files/styles/floated_media_breakpoint-large/public/news-events/research-matters/2013/20131216-mosquito.jpg",
+	description: "Ocurring as single bites on exposed skin. May occur in multiple bites. Small, puffy round bumps or welts. Can be red. Can have a small red dot at its center. Typically becomes hard and swollen after some time has passed.",
+        resultCredit: "James Gathany, CDC",
+        endInfo: "Mosquitoes have been known to carry disease. Check with your physician if you have symptoms other than itchiness after getting bitten by one."
+      },
+      {
+	help: "If you continue to sleep in the same place, you may continually be bitten until issue is resolved.",
+        image: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/bedbug-bites-revealed-under-womans-shirt-royalty-free-image-1594056992.jpg",
+        questionCredit: "Joel Carillet/ Getty Images",
+        question: "Are you continuing to get bitten, and it's usually at night when you go to sleep?",
+        answers: {
+            a: "Yes",
+            b: "No"
+        },
+	anchor: "bedbug",
+        correctAnswer: "a",
+        endResult: "Bedbug",
+        resultImg: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/single-bed-bug-on-a-blanket-fiber-royalty-free-image-183382435-1566232422.jpg",
+	description: "Small puffy red bumps that occur in clusters or lines. Often occurring at night in bed. Usually occurring on arms, trunk of the body or neck.",
+        resultCredit: "DBlight/ Getty Images",
+        endInfo: "Bedbugs are nocturnal, only coming out at night to feast. Wash all linens and sheets with hot water and vaccuum."
+      },
+      {
+	help: "If you're not sure, but think it could be, see a physician for advice.",
+        image: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/lyme-disease-borreliosis-or-borrelia-typical-lyme-royalty-free-image-1594234768.jpg",
+        questionCredit: "Anakopa/ Getty Images",
+        question: "Have you recently been to some wooded or grassy areas and developed a bullseye-like rash?",
+        answers: {
+            a: "Yes",
+            b: "No"
+        },
+	anchor: "tick",
+        correctAnswer: "a",
+        endResult: "Tick",
+        resultImg: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/mite-encephalitis-on-human-skin-royalty-free-image-1594241188.jpg",
+	description: "Can sometimes leave behind a red spot, but typically stays attached to host until it's done feeding. Mainly found in warmer parts of the body such as groin, armpits and hairline.",
+        resultCredit: "Igorchus/ Getty Images",
+        endInfo: "Ticks can carry lyme disease which is characterized by a bullseye-like rash. See a physician if this is the case. Otherwise, most people don't know they've been bitten by a tick."
+      },
+      {
+	help: "Usually occurring in warm areas of the body. (ie. groin, armpits, waist, ankles)",
+        image: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/chigger-bites-1594150343.jpg",
+        questionCredit: "TimVickers/ Wikimedia Commons",
+        question: "Have you recently been to some wooded or grassy areas and the bites you have are clustered or may have pustules?",
+        answers: {
+            a: "Yes",
+            b: "No"
+        },
+	anchor: "mite",
+        correctAnswer: "a",
+        endResult: "Mite/Chigger",
+        resultImg: "https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/chiggers-1588598413.png",
+	description: "Flat red patches or raised red bumps occuring in clusters or lines. May sometimes develop into pustules or blisters. Typically occurring in ankles, wrists, thighs, groin, and waist.",
+        resultCredit: "BSIP/ Getty Images",
+        endInfo: "Mite/Chigger typically appear in the wild and are almost microscopic. Unlike popular belief, they do not burrow into the skin."
+      }
+    ];
+
+
+    buildQuiz();
+
+
+    var previousButton = document.getElementById("previous");
+    var nextButton = document.getElementById("next");
+    var beginButton = document.getElementById('begin');
+    var slides = document.querySelectorAll(".slide");
+    let currentSlide = 0;
+
+
+    showSlide(currentSlide);
+
+    submitButton.addEventListener("click", showResults);
+    previousButton.addEventListener("click", showPreviousSlide);
+    nextButton.addEventListener("click", showNextSlide);
+    beginButton.addEventListener("click", showNextSlide);
+
+  })();
+
+  function leaving_alert(node) {
+    return confirm("You may lose progress. Click Ok to continue, or Cancel to stay on this page.");
+}
+
+//https://simplestepscode.com/javascript-quiz-tutorial/#step1 </script>
+
+          
